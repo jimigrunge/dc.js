@@ -1,10 +1,11 @@
 var grunt = require("grunt");
 var phantomjs = require('grunt-lib-phantomjs').init(grunt);
-require("./difflib.js");
+var difflib = require("jsdifflib");
 
 module.exports = {
     testStockExample: function (asyncDone, showDiff) {
         var passed = false;
+        process.env.TZ = "UTC";
 
         phantomjs.on('rendered', function(pageStr) {
             require("fs").readFile(__dirname + '/rendered-stock-fixture.html', function (err, data) {
@@ -46,6 +47,7 @@ module.exports = {
 
     updateStockExample: function (asyncDone) {
         var ok = false;
+        process.env.TZ = "UTC";
 
         phantomjs.on('rendered', function(pageStr) {
             require("fs").writeFile(__dirname + '/rendered-stock-fixture.html', pageStr, function (err) {
