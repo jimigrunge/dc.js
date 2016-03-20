@@ -1,4 +1,35 @@
 # 2.0 Series
+## 2.0.0 beta 27
+* Improvements to HTML documentation, by Matt Traynham ([1096](https://github.com/dc-js/dc.js/issues/1096) / [1097](https://github.com/dc-js/dc.js/issues/1097) / [1099](https://github.com/dc-js/dc.js/issues/1099) / [1100](https://github.com/dc-js/dc.js/issues/1100) / [1101](https://github.com/dc-js/dc.js/pull/1101))
+* Ability to set color and opacity of non-brushed ("excluded") points in scatterplot; also separate brushing from highlighting, which seems like a different thing. ([938](https://github.com/dc-js/dc.js/issues/938))
+
+## 2.0.0 beta 26
+* Apply pie chart labels before transition, so they are easier to manipulate with the pretransition hook. Added example of showing percentages in pie chart labels. (Workaround for [#703](https://github.com/dc-js/dc.js/issues/703))
+* Documentation of chart registry, by Jasmine Hegman ([#676](https://github.com/dc-js/dc.js/issues/676) / [#1082](https://github.com/dc-js/dc.js/pull/1082))
+* HTML documentation generation, by Matt Traynham. There are still some kinks to be worked out here, but in principle it should be more robust than the gigantic markdown file we are generating. ([#1086](https://github.com/dc-js/dc.js/pull/1086))
+* Document that you need to use a `RangedFilter` when filtering a range, by koefoed ([#1090](https://github.com/dc-js/dc.js/pull/1090))
+* Fix links to box plot examples, by Yuval Greenfield ([#1094](https://github.com/dc-js/dc.js/pull/1094))
+* [Sparkline example](http://dc-js.github.io/dc.js/examples/sparkline.html) ([#1013](https://github.com/dc-js/dc.js/issues/1013))
+* Example of [complex reductions](http://dc-js.github.io/dc.js/examples/complex-reduce.html) that need all the rows in each group, like min, max, median.
+* [Time interval](http://dc-js.github.io/dc.js/examples/time-intervals.html) example.
+
+## 2.0.0 beta 25
+* Improved dataTable docs (including a fix for [#1030](https://github.com/dc-js/dc.js/issues/1030))
+* Generate proper data table header ([#1015](https://github.com/dc-js/dc.js/issues/1015))
+* Fix various test failures on Safari/IE/Edge (regular testing is on Chrome/Firefox/Opera) ([#1072](https://github.com/dc-js/dc.js/issues/1072), [#1073](https://github.com/dc-js/dc.js/issues/1073), [#1074](https://github.com/dc-js/dc.js/issues/1064))
+
+## 2.0.0 beta 24
+* Only auto-calculate width/height once each render - sizes were getting calculated wrong ([#1070](https://github.com/dc-js/dc.js/issues/1070)) and charts were changing size on redraw if they didn't have a fixed size in the chart spec or in the div style ([#980](https://github.com/dc-js/dc.js/issues/980))
+* Tell browserify the correct entry point `browser: dc.js`, so it won't try to bundle jsdom, by Sam Dunster ([#1005](https://github.com/dc-js/dc.js/issues/1005) / ([#1062](https://github.com/dc-js/dc.js/pull/1062))
+* Lighten the vertical lines in row chart (consistent with other charts), by Mike Vashevko ([#1046](https://github.com/dc-js/dc.js/issues/1046) / ([#1047](https://github.com/dc-js/dc.js/pull/1047))
+* dc.utils docs, by Matt Traynham ([#961](https://github.com/dc-js/dc.js/issues/961) / ([#1041](https://github.com/dc-js/dc.js/pull/1041))
+
+## 2.0.0 beta 23
+* Domain was getting set for composite charts even when `elasticY` disabled. ([#1056](https://github.com/dc-js/dc.js/issues/1056)
+
+## 2.0.0 beta 22
+(no changes; bump due to botched npm publish)
+
 ## 2.0.0 beta 21
 * Ability to use non-crossfilter backend with asynchronous connection (callback), via `commitHandler`.
 * Domain comparison was failing for undefined/null domain values.

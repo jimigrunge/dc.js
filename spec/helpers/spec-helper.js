@@ -1,6 +1,5 @@
 /* global parseTranslate */
 beforeEach(function () {
-    d3.select('body').append('div').attr('id', 'test-content');
     jasmine.clock().install();
 
     // If we're using browserify bundle, pull d3 and crossfilter out of it,
@@ -9,6 +8,7 @@ beforeEach(function () {
     if (typeof d3 === 'undefined') { d3 = dc.d3; }
     if (typeof crossfilter === 'undefined') { crossfilter = dc.crossfilter; }
     /* jshint +W020 */
+    d3.select('body').append('div').attr('id', 'test-content');
 });
 
 afterEach(function () {
@@ -35,6 +35,12 @@ function makeDate (year, month, day) {
         throw new Error('makeDate takes year, month, day');
     }
     return new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+}
+
+// the invisible non-array members that we add in dc.filter cause the objects
+// to be non-equal (correctly, but with no good diagnostics) in the eyes of Jasmine.
+function cleanDateRange (range) {
+    return [range[0], range[1]];
 }
 
 // http://stackoverflow.com/questions/20068497/d3-transition-in-unit-testing

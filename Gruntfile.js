@@ -84,12 +84,16 @@ module.exports = function (grunt) {
         },
         watch: {
             jsdoc2md: {
-                files: ['<%= conf.src %>/**/*.js'],
-                tasks: ['build', 'jsdoc2md']
+                files: ['welcome.md', '<%= conf.src %>/**/*.js'],
+                tasks: ['build', 'jsdoc', 'jsdoc2md']
             },
             scripts: {
                 files: ['<%= conf.src %>/**/*.js', '<%= conf.web %>/stock.js'],
                 tasks: ['docs']
+            },
+            styles: {
+                files: ['<%= conf.pkg.name %>.css'],
+                tasks: ['cssmin:main', 'copy:dc-to-gh']
             },
             jasmineRunner: {
                 files: ['<%= conf.spec %>/**/*.js'],
@@ -101,7 +105,7 @@ module.exports = function (grunt) {
             },
             reload: {
                 files: ['<%= conf.pkg.name %>.js',
-                    '<%= conf.pkg.name %>css',
+                    '<%= conf.pkg.name %>.css',
                     '<%= conf.web %>/js/<%= conf.pkg.name %>.js',
                     '<%= conf.web %>/css/<%= conf.pkg.name %>.css',
                     '<%= conf.pkg.name %>.min.js'],
@@ -125,8 +129,8 @@ module.exports = function (grunt) {
                     summary: true,
                     specs:  '<%= conf.spec %>/*-spec.js',
                     helpers: [
-                        '<%= conf.spec %>/helpers/*.js',
-                        'node_modules/grunt-saucelabs/examples/jasmine/lib/jasmine-jsreporter/jasmine-jsreporter.js'
+                        '<%= conf.web %>/js/jasmine-jsreporter.js',
+                        '<%= conf.spec %>/helpers/*.js'
                     ],
                     version: '2.0.0',
                     outfile: '<%= conf.spec %>/index.html',
@@ -164,7 +168,10 @@ module.exports = function (grunt) {
                     display: 'short',
                     summary: true,
                     specs:  '<%= conf.spec %>/*-spec.js',
-                    helpers: '<%= conf.spec %>/helpers/*.js',
+                    helpers: [
+                        '<%= conf.web %>/js/jasmine-jsreporter.js',
+                        '<%= conf.spec %>/helpers/*.js'
+                    ],
                     version: '2.0.0',
                     outfile: '<%= conf.spec %>/index-browserify.html',
                     keepRunner: true
@@ -184,21 +191,36 @@ module.exports = function (grunt) {
                     browsers: [
                         {
                             browserName: 'firefox',
-                            version: '25',
-                            platform: 'linux'
+                            version: '43.0',
+                            platform: 'Linux'
                         },
                         {
                             browserName: 'safari',
-                            version: '7',
-                            platform: 'OS X 10.9'
+                            version: '9.0',
+                            platform: 'OS X 10.11'
                         },
                         {
                             browserName: 'internet explorer',
-                            version: '10',
-                            platform: 'WIN8'
+                            version: '11.0',
+                            platform: 'Windows 10'
+                        },
+                        {
+                            browserName: 'MicrosoftEdge',
+                            version: '20.10240',
+                            platform: 'Windows 10'
                         }
                     ],
                     testname: '<%= conf.pkg.name %>.js'
+                }
+            }
+        },
+        jsdoc: {
+            dist: {
+                src: ['welcome.md', '<%= conf.src %>/**/*.js', '!<%= conf.src %>/{banner,footer}.js'],
+                options: {
+                    destination: 'web/docs/html',
+                    template: 'node_modules/ink-docstrap/template',
+                    configure: 'jsdoc.conf.json'
                 }
             }
         },
@@ -239,7 +261,8 @@ module.exports = function (grunt) {
                             '<%= conf.pkg.name %>.min.js',
                             '<%= conf.pkg.name %>.min.js.map',
                             'node_modules/d3/d3.js',
-                            'node_modules/crossfilter/crossfilter.js',
+                            'node_modules/crossfilter2/crossfilter.js',
+                            'node_modules/grunt-saucelabs/examples/jasmine/lib/jasmine-jsreporter/jasmine-jsreporter.js',
                             'test/env-data.js'
                         ],
                         dest: '<%= conf.web %>/js/'
@@ -356,24 +379,25 @@ module.exports = function (grunt) {
                 interrupt: true
             },
             runner: grunt.config('watch').jasmineRunner,
-            scripts: grunt.config('watch').scripts
+            scripts: grunt.config('watch').scripts,
+            styles: grunt.config('watch').styles
         });
         grunt.task.run('watch');
     });
 
     // task aliases
     grunt.registerTask('build', ['concat', 'uglify', 'cssmin']);
-    grunt.registerTask('docs', ['build', 'copy', 'jsdoc2md', 'docco', 'fileindex']);
+    grunt.registerTask('docs', ['build', 'copy', 'jsdoc', 'jsdoc2md', 'docco', 'fileindex']);
     grunt.registerTask('web', ['docs', 'gh-pages']);
     grunt.registerTask('server', ['docs', 'fileindex', 'jasmine:specs:build', 'connect:server', 'watch:jasmine-docs']);
-    grunt.registerTask('test', ['build', 'jasmine:specs']);
-    grunt.registerTask('test-browserify', ['build', 'browserify', 'jasmine:browserify']);
-    grunt.registerTask('coverage', ['build', 'jasmine:coverage']);
+    grunt.registerTask('test', ['build', 'copy', 'jasmine:specs']);
+    grunt.registerTask('test-browserify', ['build', 'copy', 'browserify', 'jasmine:browserify']);
+    grunt.registerTask('coverage', ['build', 'copy', 'jasmine:coverage']);
     grunt.registerTask('ci', ['test', 'jasmine:specs:build', 'connect:server', 'saucelabs-jasmine']);
     grunt.registerTask('ci-pull', ['test', 'jasmine:specs:build', 'connect:server']);
     grunt.registerTask('lint', ['jshint', 'jscs']);
     grunt.registerTask('default', ['build', 'shell:hooks']);
-    grunt.registerTask('jsdoc', ['build', 'jsdoc2md', 'watch:jsdoc2md']);
+    grunt.registerTask('doc-debug', ['build', 'jsdoc', 'jsdoc2md', 'watch:jsdoc2md']);
 };
 
 module.exports.jsFiles = [

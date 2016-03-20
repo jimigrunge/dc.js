@@ -2,7 +2,7 @@
  * Composite charts are a special kind of chart that render multiple charts on the same Coordinate
  * Grid. You can overlay (compose) different bar/line/area charts in a single composite chart to
  * achieve some quite flexible charting effects.
- * @name compositeChart
+ * @class compositeChart
  * @memberof dc
  * @mixes dc.coordinateGridMixin
  * @example
@@ -152,11 +152,16 @@ dc.compositeChart = function (parent, chartGroup) {
     }
 
     function prepareRightYAxis (ranges) {
-        if (_chart.rightY() === undefined || _chart.elasticY() || _chart.resizing()) {
-            if (_chart.rightY() === undefined) {
-                _chart.rightY(d3.scale.linear());
-            }
-            _chart.rightY().domain([ranges.ryAxisMin, ranges.ryAxisMax]).rangeRound([_chart.yAxisHeight(), 0]);
+        var needDomain = _chart.rightY() === undefined || _chart.elasticY(),
+            needRange = needDomain || _chart.resizing();
+        if (_chart.rightY() === undefined) {
+            _chart.rightY(d3.scale.linear());
+        }
+        if (needDomain) {
+            _chart.rightY().domain([ranges.ryAxisMin, ranges.ryAxisMax]);
+        }
+        if (needRange) {
+            _chart.rightY().rangeRound([_chart.yAxisHeight(), 0]);
         }
 
         _chart.rightY().range([_chart.yAxisHeight(), 0]);
@@ -166,11 +171,16 @@ dc.compositeChart = function (parent, chartGroup) {
     }
 
     function prepareLeftYAxis (ranges) {
-        if (_chart.y() === undefined || _chart.elasticY() || _chart.resizing()) {
-            if (_chart.y() === undefined) {
-                _chart.y(d3.scale.linear());
-            }
-            _chart.y().domain([ranges.lyAxisMin, ranges.lyAxisMax]).rangeRound([_chart.yAxisHeight(), 0]);
+        var needDomain = _chart.y() === undefined || _chart.elasticY(),
+            needRange = needDomain || _chart.resizing();
+        if (_chart.y() === undefined) {
+            _chart.y(d3.scale.linear());
+        }
+        if (needDomain) {
+            _chart.y().domain([ranges.lyAxisMin, ranges.lyAxisMax]);
+        }
+        if (needRange) {
+            _chart.y().rangeRound([_chart.yAxisHeight(), 0]);
         }
 
         _chart.y().range([_chart.yAxisHeight(), 0]);
@@ -218,7 +228,7 @@ dc.compositeChart = function (parent, chartGroup) {
      * Get or set whether to draw gridlines from the right y axis.  Drawing from the left y axis is the
      * default behavior. This option is only respected when subcharts with both left and right y-axes
      * are present.
-     * @name useRightAxisGridLines
+     * @method useRightAxisGridLines
      * @memberof dc.compositeChart
      * @instance
      * @param {Boolean} [useRightAxisGridLines=false]
@@ -236,8 +246,8 @@ dc.compositeChart = function (parent, chartGroup) {
 
     /**
      * Get or set chart-specific options for all child charts. This is equivalent to calling
-     * {@link #dc.baseMixin+options .options} on each child chart.
-     * @name childOptions
+     * {@link dc.baseMixin#options .options} on each child chart.
+     * @method childOptions
      * @memberof dc.compositeChart
      * @instance
      * @param {Object} [childOptions]
@@ -265,7 +275,7 @@ dc.compositeChart = function (parent, chartGroup) {
 
     /**
      * Set or get the right y axis label.
-     * @name rightYAxisLabel
+     * @method rightYAxisLabel
      * @memberof dc.compositeChart
      * @instance
      * @param {String} [rightYAxisLabel]
@@ -286,7 +296,7 @@ dc.compositeChart = function (parent, chartGroup) {
 
     /**
      * Combine the given charts into one single composite coordinate grid chart.
-     * @name compose
+     * @method compose
      * @memberof dc.compositeChart
      * @instance
      * @example
@@ -328,7 +338,7 @@ dc.compositeChart = function (parent, chartGroup) {
 
     /**
      * Returns the child charts which are composed into the composite chart.
-     * @name children
+     * @method children
      * @memberof dc.compositeChart
      * @instance
      * @return {Array<dc.baseMixin>}
@@ -338,11 +348,11 @@ dc.compositeChart = function (parent, chartGroup) {
     };
 
     /**
-     * Get or set color sharing for the chart. If set, the {@link #dc.colorMixin+colors .colors()} value from this chart
+     * Get or set color sharing for the chart. If set, the {@link dc.colorMixin#colors .colors()} value from this chart
      * will be shared with composed children. Additionally if the child chart implements
      * Stackable and has not set a custom .colorAccessor, then it will generate a color
      * specific to its order in the composition.
-     * @name shareColors
+     * @method shareColors
      * @memberof dc.compositeChart
      * @instance
      * @param {Boolean} [shareColors=false]
@@ -358,9 +368,9 @@ dc.compositeChart = function (parent, chartGroup) {
     };
 
     /**
-     * Get or set title sharing for the chart. If set, the {@link #dc.baseMixin+title .title()} value from
+     * Get or set title sharing for the chart. If set, the {@link dc.baseMixin#title .title()} value from
      * this chart will be shared with composed children.
-     * @name shareTitle
+     * @method shareTitle
      * @memberof dc.compositeChart
      * @instance
      * @param {Boolean} [shareTitle=true]
@@ -378,7 +388,7 @@ dc.compositeChart = function (parent, chartGroup) {
     /**
      * Get or set the y scale for the right axis. The right y scale is typically automatically
      * generated by the chart implementation.
-     * @name rightY
+     * @method rightY
      * @memberof dc.compositeChart
      * @instance
      * @see {@link https://github.com/mbostock/d3/wiki/Scales d3.scale}
@@ -398,7 +408,7 @@ dc.compositeChart = function (parent, chartGroup) {
     /**
      * Get or set alignment between left and right y axes. A line connecting '0' on both y axis
      * will be parallel to x axis.
-     * @name alignYAxes
+     * @method alignYAxes
      * @memberof dc.compositeChart
      * @instance
      * @param {Boolean} [alignYAxes=false]
@@ -509,7 +519,7 @@ dc.compositeChart = function (parent, chartGroup) {
      * object](https://github.com/mbostock/d3/wiki/SVG-Axes#wiki-_axis) therefore it supports any valid
      * d3 axis manipulation. **Caution**: The y axis is usually generated internally by dc;
      * resetting it may cause unexpected results.
-     * @name rightYAxis
+     * @method rightYAxis
      * @memberof dc.compositeChart
      * @instance
      * @see {@link https://github.com/mbostock/d3/wiki/SVG-Axes d3.svg.axis}

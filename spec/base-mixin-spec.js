@@ -354,34 +354,87 @@ describe('dc.baseMixin', function () {
     });
 
     describe('calculation of dimensions', function () {
+        var dimdiv, bodyWidth;
         beforeEach(function () {
+            dimdiv = appendChartID('dimensionTest');
             chart.anchor('#dimensionTest');
+            bodyWidth = d3.select('body')[0][0].getBoundingClientRect().width;
         });
 
-        describe('when set to a falsy', function () {
+        describe('when set to a falsy on a sized div', function () {
+            var h0, w0;
             beforeEach(function () {
+                dimdiv.style({
+                    height: '220px',
+                    width: '230px'
+                });
                 chart.width(null).height(null).render();
+                w0 = chart.width();
+                h0 = chart.height();
             });
 
-            it('should set the height to the default', function () {
-                expect(chart.height()).toEqual(200);
+            it('should set the height to the div size', function () {
+                expect(chart.height()).toBeCloseTo(220,1);
             });
 
-            it('should set the width to the default', function () {
-                expect(chart.width()).toEqual(200);
+            it('should set the width to the div size', function () {
+                expect(chart.width()).toBeCloseTo(230,1);
             });
 
-            describe('with minimums set', function () {
+            describe('and redrawn', function () {
                 beforeEach(function () {
-                    chart.minHeight(234).minWidth(976).render();
+                    chart.redraw();
+                });
+
+                it('should keep the size the same', function () {
+                    expect(chart.height()).toEqual(h0,1);
+                    expect(chart.width()).toEqual(w0);
+                });
+            });
+
+            describe('and minimums set', function () {
+                beforeEach(function () {
+                    chart.minHeight(234).minWidth(976)
+                        .render();
                 });
 
                 it('should set the height to the minimum', function () {
-                    expect(chart.height()).toEqual(234);
+                    expect(chart.height()).toBeCloseTo(234,1);
                 });
 
                 it('should set the width to the minimum', function () {
-                    expect(chart.width()).toEqual(976);
+                    expect(chart.width()).toBeCloseTo(976,1);
+                });
+            });
+        });
+
+        describe('when set to a falsy on an unsized div with junk in it', function () {
+            var h0, w0;
+            beforeEach(function () {
+                dimdiv.append('h1').text('helL0');
+                chart.width(null).height(null)
+                    .render()
+                    .resetSvg(); // because all real charts generate svg
+                w0 = chart.width();
+                h0 = chart.height();
+            });
+
+            it('should set the height to at least the default minimum', function () {
+                expect(chart.height()).not.toBeLessThan(200);
+            });
+
+            it('should set the width to at least the default minimum', function () {
+                expect(chart.width()).not.toBeLessThan(200);
+            });
+
+            describe('and redrawn', function () {
+                beforeEach(function () {
+                    chart.redraw();
+                });
+
+                it('should keep the size the same', function () {
+                    expect(chart.height()).toEqual(h0);
+                    expect(chart.width()).toEqual(w0);
                 });
             });
         });
@@ -413,6 +466,7 @@ describe('dc.baseMixin', function () {
 
             it('should ask the callback for the width', function () {
                 expect(chart.width()).toEqual(800);
+                expect(setterSpy).toHaveBeenCalled();
             });
         });
     });
